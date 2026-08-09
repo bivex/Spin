@@ -88,12 +88,13 @@ static char pushedback[4096];
 
 static void
 push_back(char *s)
-{
-	if (PushedBack + strlen(s) > 4094)
+{	size_t len = strlen(s);
+
+	if (PushedBack + len > 4094)
 	{	fatal("select statement too large", 0);
 	}
-	strcat(pushedback, s);
-	PushedBack += strlen(s);
+	memcpy(&pushedback[PushedBack], s, len + 1);
+	PushedBack += (int) len;
 }
 
 static int

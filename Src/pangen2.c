@@ -220,6 +220,12 @@ gensrc(void)
 		alldone(1);
 	}
 
+	setvbuf(fd_tc, NULL, _IOFBF, 64 * 1024);
+	setvbuf(fd_th, NULL, _IOFBF, 64 * 1024);
+	setvbuf(fd_tt, NULL, _IOFBF, 64 * 1024);
+	setvbuf(fd_tm, NULL, _IOFBF, 64 * 1024);
+	setvbuf(fd_tb, NULL, _IOFBF, 64 * 1024);
+
 	fprintf(fd_th, "#ifndef PAN_H\n");
 	fprintf(fd_th, "#define PAN_H\n\n");
 
