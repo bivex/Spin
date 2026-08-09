@@ -2219,7 +2219,7 @@ scan_seq(Sequence *s)
 			&& !(f->status & L_ATOM)
 			&& !(g->status & (ATOM|L_ATOM)))
 #endif
-			{	fprintf(fd_tt, "\t/* mark-down line %d status %d = %d */\n", f->n->ln, f->status, (f->status & D_ATOM));
+			{	fprintf(fd_tt, "\t/* mark-down line %d status %d = %d */\n", f->n->ln, f->status, (int)(f->status & D_ATOM));
 				return 1; /* assume worst case */
 		}	}
 		for (h = f->sub; h; h = h->nxt)

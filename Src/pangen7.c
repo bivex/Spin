@@ -312,6 +312,8 @@ static int
 claim_has_accept(ProcList *p)
 {	Label *l;
 
+	if (!p || !p->n) return 0;
+
 	for (l = labtab; l; l = l->nxt)
 	{	if (strcmp(l->c->name, p->n->name) == 0
 		&&  strncmp(l->s->name, "accept", 6) == 0)

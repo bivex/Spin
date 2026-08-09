@@ -526,7 +526,7 @@ comwork(FILE *fd, Lextok *now, int m)
 	case UNLESS:	fprintf(fd, "unless"); break;
 	case TIMEOUT:	fprintf(fd, "timeout"); break;
 	default:	if (isprint(now->ntyp))
-				fprintf(fd, "'%c'", now->ntyp);
+				fprintf(fd, "'%c'", (char) now->ntyp);
 			else
 				fprintf(fd, "%d", now->ntyp);
 			break;

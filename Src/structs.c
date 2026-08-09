@@ -547,10 +547,12 @@ retrieve(Lextok **targ, int i, int want, Lextok *n, int Ntyp)
 		{	for (k = 0; k < tl->sym->nel; k++, j++)
 			{	if (j == want)
 				{	*targ = cpnn(tl, 1, 0, 0);
-					(*targ)->lft = nn(ZN, CONST, ZN, ZN);
-					(*targ)->lft->val = k;
-					if (Ntyp)
-					(*targ)->ntyp = (short) Ntyp;
+					if (*targ)
+					{	(*targ)->lft = nn(ZN, CONST, ZN, ZN);
+						(*targ)->lft->val = k;
+						if (Ntyp)
+						(*targ)->ntyp = (short) Ntyp;
+					}
 					return -1;
 				}
 	}	}	}
@@ -613,8 +615,10 @@ mk_explicit(Lextok *n, int Ok, int Ntyp)
 		bld = mk_explicit(n->rgt->lft, Ok, Ntyp);
 		for (x = bld; x; x = x->rgt)
 		{	y = cpnn(n, 1, 0, 0);
-			y->rgt = nn(ZN, '.', x->lft, ZN);
-			x->lft = y;
+			if (y)
+			{	y->rgt = nn(ZN, '.', x->lft, ZN);
+				x->lft = y;
+			}
 		}
 
 		return bld;
@@ -636,8 +640,10 @@ mk_explicit(Lextok *n, int Ok, int Ntyp)
 			fatal("bad structure %s", n->sym->name);
 		}
 		x = cpnn(n, 1, 0, 0);
-		x->rgt = nn(ZN, '.', bld->lft, ZN);
-		bld->lft = x;
+		if (x)
+		{	x->rgt = nn(ZN, '.', bld->lft, ZN);
+			bld->lft = x;
+		}
 	}
 	return bld;
 }
