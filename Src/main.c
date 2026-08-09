@@ -937,7 +937,10 @@ main(int argc, char *argv[])
 		case 'n': T = atoi(&argv[1][2]); tl_terse = 1; break;
 		case 'O': old_scope_rules = 1; break;
 		case 'o': usedopts += optimizations(argv[1][2]); break;
-		case 'P': assert(strlen((const char *) &argv[1][2]) < sizeof(PreProc));
+		case 'P': if (strlen((const char *) &argv[1][2]) >= sizeof(PreProc))
+			  {	fprintf(stderr, "spin: -P argument too long\n");
+				alldone(1);
+			  }
 			  strcpy(PreProc, (const char *) &argv[1][2]);
 			  break;
 		case 'p': if (argv[1][2] == 'p')
@@ -1080,7 +1083,10 @@ samecase:			if (buzzed != 0)
 		strcpy(out1, "pan.pre");
 
 		if (add_ltl || nvr_file)
-		{	assert(strlen(argv[1])+6 < sizeof(out2));
+		{	if (strlen(argv[1]) + 6 >= sizeof(out2))
+			{	printf("spin: filename too long\n");
+				alldone(1);
+			}
 			sprintf(out2, "%s.nvr", argv[1]);
 			if ((fd = fopen(out2, MFLAGS)) == NULL)
 			{	printf("spin: cannot create tmp file %s\n",
@@ -1112,7 +1118,10 @@ samecase:			if (buzzed != 0)
 			alldone(1);
 		}
 
-		assert(strlen(argv[1])+1 < sizeof(cmd));
+		if (strlen(argv[1]) + 2 >= sizeof(cmd))
+		{	printf("spin: filename too long\n");
+			alldone(1);
+		}
 
 		if (strncmp(argv[1], "progress", (size_t) 8) == 0
 		||  strncmp(argv[1], "accept", (size_t) 6) == 0)

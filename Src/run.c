@@ -170,7 +170,7 @@ eval_sub(Element *e)
 			}
 			k--;
 		} else
-		{	if (e->n && e->n->indstep >= 0)
+		{	if (e->n->indstep >= 0)
 				k = 0;	/* select 1st executable guard */
 			else
 				k = (j > 0) ? (Rand()%j) : 0;	/* nondeterminism */
