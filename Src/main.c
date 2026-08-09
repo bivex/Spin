@@ -259,6 +259,10 @@ e_system(int v, const char *s)
 	return system(s);
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+void alldone(int) __attribute__((noreturn));
+#endif
+
 void
 alldone(int estatus)
 {	char *ptr;
@@ -511,7 +515,7 @@ runit:
 
 			/* increase -w every itsr_n-th run */
 			if ((itsr_n > 0 && (itsr == 0 || (itsr%itsr_n) != 0))
-			||  (change_param(tmp, "-w", 36, 18) >= 0))	/* max 4G bit statespace */
+			||  (change_param(tmp, "-w", 36, 18) > 0))	/* max 4G bit statespace */
 			{	(void) change_param(tmp, "-h", 500, 0);	/* hash function 0.499 */
 				(void) change_param(tmp, "-p_rotate", 256, 0); /* if defined */
 				(void) change_param(tmp, "-k", 4, 1);	/* nr bits per state 0->1,2,3 */
