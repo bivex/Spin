@@ -25,6 +25,31 @@ Lextok		*runstmnts = ZN;
 static Ordered	*last_name = (Ordered *)0;
 static Symbol	*symtab[Nhash+1];
 
+#define SYMBOL_CHUNK 512
+#define ORDERED_CHUNK 512
+
+static Symbol *
+alloc_symbol(void)
+{	static Symbol *chunk = NULL;
+	static int idx = SYMBOL_CHUNK;
+	if (idx >= SYMBOL_CHUNK)
+	{	chunk = (Symbol *) emalloc(SYMBOL_CHUNK * sizeof(Symbol));
+		idx = 0;
+	}
+	return &chunk[idx++];
+}
+
+static Ordered *
+alloc_ordered(void)
+{	static Ordered *chunk = NULL;
+	static int idx = ORDERED_CHUNK;
+	if (idx >= ORDERED_CHUNK)
+	{	chunk = (Ordered *) emalloc(ORDERED_CHUNK * sizeof(Ordered));
+		idx = 0;
+	}
+	return &chunk[idx++];
+}
+
 static int
 samename(Symbol *a, Symbol *b)
 {
@@ -60,7 +85,8 @@ disambiguate(void)
 		if (sp->type != 0
 		&&  sp->type != LABEL
 		&&  strlen((const char *)sp->bscp) > 1)
-		{	if (sp->context)
+		{	size_t nlen;
+			if (sp->context)
 			{	m = (char *) emalloc(strlen((const char *)sp->bscp) + 1);
 				sprintf(m, "_%d_", sp->context->sc);
 				if (strcmp((const char *) m, (const char *) sp->bscp) == 0)
@@ -69,11 +95,12 @@ disambiguate(void)
 				   not for top-level locals within a proctype
 				   this means that you can no longer use the same name
 				   for a global and a (top-level) local variable
-				 */
-			}	}
+				*/
+				}
+			}
 
-			n = (char *) emalloc(strlen((const char *)sp->name)
-				+ strlen((const char *)sp->bscp) + 1);
+			nlen = strlen((const char *)sp->bscp) + strlen((const char *)sp->name) + 1;
+			n = (char *) emalloc(nlen);
 			sprintf(n, "%s%s", sp->bscp, sp->name);
 			sp->name = n;	/* discard the old memory */
 	}	}
@@ -118,20 +145,18 @@ lookup(char *s)
 		&&  samename(sp->owner, owner))
 		{	return sp;		/* global */
 	}	}
-	sp = (Symbol *) emalloc(sizeof(Symbol));
-	sp->name = (char *) emalloc(strlen(s) + 1);
-	strcpy(sp->name, s);
+	sp = alloc_symbol();
+	sp->name = emstrdup(s);
 	sp->nel = 1;
 	sp->setat = depth;
 	sp->context = context;
 	sp->owner = owner;			/* if fld in struct */
-	sp->bscp = (unsigned char *) emalloc(strlen((const char *)CurScope)+1);
-	strcpy((char *)sp->bscp, CurScope);
+	sp->bscp = (unsigned char *) emstrdup((const char *)CurScope);
 
 	if (NamesNotAdded == 0)
 	{	sp->next = symtab[h];
 		symtab[h] = sp;
-		no = (Ordered *) emalloc(sizeof(Ordered));
+		no = alloc_ordered();
 		no->entry = sp;
 		if (!last_name)
 			last_name = all_names = no;

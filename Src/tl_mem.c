@@ -72,10 +72,7 @@ tl_emalloc(int U)
 		freelist[u] = m->link;
 	}
 	m->size = (u|A_USER);
-
-	for (r = 1; r < u; )
-	{	(&m->size)[r++] = 0;
-	}
+	memset((void *)(m+1), 0, (size_t)((u-1) * sizeof(union M)));
 
 	rp = (void *) (m+1);
 	memset(rp, 0, U);
