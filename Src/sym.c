@@ -28,7 +28,7 @@ static Symbol	*symtab[Nhash+1];
 static int
 samename(Symbol *a, Symbol *b)
 {
-	if (!a && !b) return 1;
+	if (a == b) return 1;
 	if (!a || !b) return 0;
 	return !strcmp(a->name, b->name);
 }
@@ -97,10 +97,11 @@ lookup(char *s)
 	} else
 	{	/* added 6.0.0: more traditional, scope rule */
 		for (sp = symtab[h]; sp; sp = sp->next)
-		{	if (strcmp(sp->name, s) == 0
+		{	size_t blen = strlen((const char *)sp->bscp);
+			if (strcmp(sp->name, s) == 0
 			&&  samename(sp->context, context)
 			&&  (strcmp((const char *)sp->bscp, CurScope) == 0
-			||   strncmp((const char *)sp->bscp, CurScope, strlen((const char *)sp->bscp)) == 0)
+			||   strncmp((const char *)sp->bscp, CurScope, blen) == 0)
 			&&  samename(sp->owner, owner))
 			{
 				if (!samename(sp->owner, owner))
