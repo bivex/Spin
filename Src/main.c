@@ -1347,9 +1347,25 @@ setaccess(Symbol *sp, Symbol *what, int cnt, int t)
 	sp->access = a;
 }
 
+#define LEXTOK_CHUNK_SIZE 1024
+
+static Lextok *
+alloc_lextok(void)
+{
+	static Lextok *chunk = NULL;
+	static int chunk_idx = LEXTOK_CHUNK_SIZE;
+
+	if (chunk_idx >= LEXTOK_CHUNK_SIZE)
+	{
+		chunk = (Lextok *) emalloc(LEXTOK_CHUNK_SIZE * sizeof(Lextok));
+		chunk_idx = 0;
+	}
+	return &chunk[chunk_idx++];
+}
+
 Lextok *
 nn(Lextok *s, int t, Lextok *ll, Lextok *rl)
-{	Lextok *n = (Lextok *) emalloc(sizeof(Lextok));
+{	Lextok *n = alloc_lextok();
 	static int warn_nn = 0;
 
 	n->uiid = is_inline();	/* record origin of the statement */

@@ -35,15 +35,13 @@ samename(Symbol *a, Symbol *b)
 
 unsigned int
 hash(const char *s)
-{	unsigned int h = 0;
+{	unsigned int h = 2166136261U;
 
 	while (*s)
-	{	h += (unsigned int) *s++;
-		h <<= 1;
-		if (h&(Nhash+1))
-			h |= 1;
+	{	h ^= (unsigned char) *s++;
+		h *= 16777619U;
 	}
-	return h&Nhash;
+	return h & Nhash;
 }
 
 void
